@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
     res.send('🚀 Marchell Live API Server is Running Successfully!');
 });
 
-// تم تعديل المسار هنا ليصبح /api/news ليطابق طلب الواجهة تماماً
+// المسار المتوافق تماماً مع طلب الواجهة
 app.get('/api/news', async (req, res) => {
     try {
         // جلب صفحة المفكرة الاقتصادية مباشرة من موقع Forex Factory
@@ -33,7 +33,7 @@ app.get('/api/news', async (req, res) => {
         $('tr.calendar__row').each((index, element) => {
             const row = $(element);
             
-            // استخراج التاريخ إذا كان موجوداً في الصف (لأن بعض الصفوف تشترك في نفس التاريخ)
+            // استخراج التاريخ إذا كان موجوداً في الصف
             const dateText = cleanText(row.find('.calendar__date').text());
             if (dateText) {
                 currentStaticDate = dateText;
@@ -47,7 +47,7 @@ app.get('/api/news', async (req, res) => {
             const forecast = cleanText(row.find('.calendar__forecast').text());
             const previous = cleanText(row.find('.calendar__previous').text());
 
-            // تحديد مدى قوة الخبر (High Impact فقط) وللعملة الأمريكية USD فقط كما طلبت في منصتك
+            // تحديد مدى قوة الخبر (High Impact فقط) وللعملة الأمريكية USD
             let isHighImpact = false;
             if (impactIcon.hasClass('icon--impact-red') || impactIcon.attr('class')?.includes('red')) {
                 isHighImpact = true;
@@ -56,8 +56,8 @@ app.get('/api/news', async (req, res) => {
             if (currency === 'USD' && isHighImpact && title) {
                 events.push({
                     title: title,
-                    country: currency, // تم تغيير المفتاح إلى country ليتوافق مع فلتر الواجهة (event.country === 'USD')
-                    impact: 'High',    // تم إرجاع قيمة نصية واضحة لتتوافق مع فلتر الواجهة (event.impact === 'High')
+                    country: currency, 
+                    impact: 'High',    
                     date: currentStaticDate,
                     time: time,
                     actual: actual,
@@ -76,8 +76,11 @@ app.get('/api/news', async (req, res) => {
     }
 });
 
-// تشغيل السيرفر على المنفذ المخصص للاستضافة السحابية
+// تشغيل السيرفر محلياً عند الحاجة
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`🚀 Marchell Server is blazing fast on port ${PORT}`);
 });
+
+// التعديل الجوهري: تصدير التطبيق ليتمكن Vercel من قراءته كـ Serverless Function
+module.exports = app;
