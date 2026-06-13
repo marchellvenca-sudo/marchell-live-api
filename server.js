@@ -9,7 +9,13 @@ app.use(cors());
 // دالة ذكية لتنظيف النصوص المستخرجة من الجداول
 const cleanText = (text) => text ? text.replace(/\s+/g, ' ').trim() : '';
 
-app.get('/api/live-calendar', async (req, res) => {
+// مسار رئيسي لعرض حالة السيرفر وتجنب رسالة Cannot GET /
+app.get('/', (req, res) => {
+    res.send('🚀 Marchell Live API Server is Running Successfully!');
+});
+
+// تم تعديل المسار هنا ليصبح /api/news ليطابق طلب الواجهة تماماً
+app.get('/api/news', async (req, res) => {
     try {
         // جلب صفحة المفكرة الاقتصادية مباشرة من موقع Forex Factory
         const response = await axios.get('https://www.forexfactory.com/calendar', {
@@ -50,7 +56,8 @@ app.get('/api/live-calendar', async (req, res) => {
             if (currency === 'USD' && isHighImpact && title) {
                 events.push({
                     title: title,
-                    currency: currency,
+                    country: currency, // تم تغيير المفتاح إلى country ليتوافق مع فلتر الواجهة (event.country === 'USD')
+                    impact: 'High',    // تم إرجاع قيمة نصية واضحة لتتوافق مع فلتر الواجهة (event.impact === 'High')
                     date: currentStaticDate,
                     time: time,
                     actual: actual,
